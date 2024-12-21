@@ -1,51 +1,47 @@
-def nonPreemptive(problem: list):
-    current=0
-    result=[]
-    while problem:
-        available=[]
-        for i in problem:
-            if i[2] <=current:
-                available.append(i)
-        if available:
-            sj=available[0]
-            for i in available:
-                if i[1] < sj[1]:
-                    sj=i
-            problem.remove(sj)
-            pName, burst_time, arrival_time = sj
-            
-            start_time = max(current, arrival_time)
-            complete_time = start_time + burst_time
-            turnaround_time = complete_time - arrival_time
-            waiting_time = turnaround_time - burst_time
-            response_time = start_time - arrival_time
+from process import Process
+def sjf_nonpreemptive(problem: list):
+        current=0
+        result=[]
+        while problem:
+            available=[]
+            for i in problem:
+                if i.arrival_time <=current:
+                    available.append(i)
+            if available:
+                sj=available[0]
+                for i in available:
+                    if i.burst_time < sj.burst_time:
+                        sj=i
+                        
+                problem.remove(sj)
+                
+                process = Process(sj.p_id, sj.arrival_time, sj.burst_time)
+                
+                start_time = max(current, process.arrival_time)
+                complete_time = start_time + process.burst_time
+                process.runs.append([start_time,complete_time])
+                process.turnaround_time = complete_time - process.arrival_time
+                process.waiting_time = process.turnaround_time - process.burst_time
+                process.response_time = start_time - process.arrival_time
 
-            current = complete_time
-            
-            result.append([
-                pName, burst_time, arrival_time, 
-                start_time, complete_time, 
-                turnaround_time, waiting_time, 
-                response_time
-            ])
-        else:
-            current_time += 1
-    return result
+                current = complete_time
+                
+                result.append([
+                    process.p_id, process.arrival_time, process.burst_time,
+                    process.runs, 
+                    process.turnaround_time, process.waiting_time, 
+                    process.response_time
+                ])
+            else:
+                current += 1
+        return result
+    
 
 
 
 
 if __name__ == "__main__":
+    processes=[Process("p1", 10, 10),Process('p2',0,12),Process("p3", 3, 8),Process("p4", 5, 4),Process("p5", 12, 6)]
     
-    problem = [
-        ["p1", 10, 10],
-        ["p2", 12, 0],
-        ["p3", 8, 3],
-        ["p4", 4, 5],
-        ["p5", 6, 12]
-    ]
-
-    result = nonPreemptive(problem)
-
-    for p in result:
+    for p in sjf_nonpreemptive(processes):
         print(p)

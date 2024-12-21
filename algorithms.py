@@ -118,33 +118,37 @@ class Algorithms:
         while problem:
             available=[]
             for i in problem:
-                if i[2] <=current:
+                if i.arrival_time <=current:
                     available.append(i)
             if available:
                 sj=available[0]
                 for i in available:
-                    if i[1] < sj[1]:
+                    if i.burst_time < sj.burst_time:
                         sj=i
+                        
                 problem.remove(sj)
-                pName, burst_time, arrival_time = sj
                 
-                start_time = max(current, arrival_time)
-                complete_time = start_time + burst_time
-                turnaround_time = complete_time - arrival_time
-                waiting_time = turnaround_time - burst_time
-                response_time = start_time - arrival_time
+                process = Process(sj.p_id, sj.arrival_time, sj.burst_time)
+                
+                start_time = max(current, process.arrival_time)
+                complete_time = start_time + process.burst_time
+                process.runs.append([start_time,complete_time])
+                process.turnaround_time = complete_time - process.arrival_time
+                process.waiting_time = process.turnaround_time - process.burst_time
+                process.response_time = start_time - process.arrival_time
 
                 current = complete_time
                 
                 result.append([
-                    pName, burst_time, arrival_time, 
-                    start_time, complete_time, 
-                    turnaround_time, waiting_time, 
-                    response_time
+                    process.p_id, process.arrival_time, process.burst_time,
+                    process.runs, 
+                    process.turnaround_time, process.waiting_time, 
+                    process.response_time
                 ])
             else:
-                current_time += 1
+                current += 1
         return result
+    
     
     def round_robin(processes_ls:list[Process], qt:int):
         it = 0

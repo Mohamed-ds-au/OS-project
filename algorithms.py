@@ -139,12 +139,7 @@ class Algorithms:
 
                 current = complete_time
                 
-                result.append([
-                    process.p_id, process.arrival_time, process.burst_time,
-                    process.runs, 
-                    process.turnaround_time, process.waiting_time, 
-                    process.response_time
-                ])
+                result.append(process)
             else:
                 current += 1
         return result
